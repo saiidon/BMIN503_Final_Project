@@ -14,6 +14,7 @@ Use this template to complete your project throughout the course. Your Final Pro
 
 ## Overview {#sec-overview}
 
+For my final project, Ill be examining changes in tree cover using data collected between 2010 and 2015. The goal is to explore how tree canopy has evolved, considering the increasing frequency of weather events due to climate change. This dataset is available through the city of Philadelphia on Open Data Philly.
 
 ## Introduction {#sec-introduction}
 
