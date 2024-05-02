@@ -1,7 +1,7 @@
 ---
-title: "Your_Title"
+title: "PHILLY TREE INVENTORY"
 subtitle: "BMIN503/EPID600 Final Project"
-author: "Saiido Noor"
+author: "Saiido"
 format: html
 editor: visual
 number-sections: true
@@ -10,26 +10,235 @@ embed-resources: true
 
 ------------------------------------------------------------------------
 
-Use this template to complete your project throughout the course. Your Final Project presentation will be based on the contents of this document. Replace the title/name above and text below with your own, but keep the headers. Feel free to change the theme and other display settings, although this is not required.
-
 ## Overview {#sec-overview}
 
-For my final project, Ill be examining changes in tree cover using data collected between 2010 and 2015. The goal is to explore how tree canopy has evolved, considering the increasing frequency of weather events due to climate change. This dataset is available through the city of Philadelphia on Open Data Philly.
+For my final project, Ill be examining tree cover using data collected annually by the city of Philadelphia. The goal is to explore how tree inventory is existing in this location, given the significant direct health implications as well as the increasing frequency of weather events due to ongoing climate change. This dataset is available through the city of Philadelphia on Open Data Philly.
 
 ## Introduction {#sec-introduction}
 
-Describe the problem addressed, its significance, and some background to motivate the problem. This should extend what is in the @sec-overview.
+This study aims to investigate the urban tree inventory in Philadelphia, Pennsylvania, with the overarching goal of understanding the differential benefits that trees provide in urban environments. With the ongoing escalation of climate change, there is an increasing need to comprehend urban tree inventories. This urgency is fueled by the more frequent and severe weather occurrences. Trees in urban locations serve as carbon sinks, effectively reducing greenhouse gas emissions, in addition to their aesthetic appeal and temperature cooling properties. Moreover, the significance of trees in enhancing public health cannot be emphasized enough. Trees enhance respiratory health due to their proficiency in removing pollutants from the air. Moreover, research has found urban areas that possess a significant abundance of greenness, including trees, are linked to a better state of mental well-being and reduced levels of stress. Furthermore, fluctuations in tree cover significantly affect the ability of the surrounding ecosystem to withstand challenges, the long-term survivability of urban environments, and the overall health and wellness of city goers. The interaction between environmental and health concerns underscores the need of comprehending the extent of tree cover in urban regions.
 
-Explain why your problem is interdisciplinary, what fields can contribute to its understanding, and incorporate background related to what you learned from meeting with faculty/staff.
+This topic goes beyond simple environmental concern; its multidisciplinary nature becomes clear when considering the several fields that collaborate on this topic. Interactions with University of Pennsylvania staff have revealed that this analysis values input from urban planning, environmental science, public health, and climate studies. The importance of urban planning lies in its ability to analyze how city architecture and expansion impact the distribution and number of trees. Environmental science offers insights into the ecological variables that impact the long-term persistance of urban trees, specifically in terms of their health and growth. Public health extends this examination by discussing the impact of tree cover on the air quality and health of those in the area. Finally, climate studies also demonstrate the significant impact of climate change on the distribution and ability of urban trees to withstand or recover from adverse conditions, such as urban heat islands.
+
+The objective of this study is to perform a thorough analysis of the current tree inventory in Philadelphia, which is regularly updated on a yearly basis. The importance of this study resides in its implications for the well-being of the general population and the increased frequency of extreme weather caused by the ongoing difficulties of climate change. The dataset's freely available to access and download through Open Data Philly.
 
 ## Methods {#sec-methods}
 
-Describe the data used and general methodological approach used to address the problem described in the @sec-introduction. Subsequently, incorporate full R code necessary to retrieve and clean data, and perform analysis. Be sure to include a description of code so that others (including your future self) can understand what you are doing and why.
+As mentioned in the introduction, this analysis utilizes the tree inventory complied by the City of Philadelphia containing information on trees, consisting of: species, diameter at breast height (DBH) in inches, year of data collection, and geographic coordinates (longitude and latitude). To begin the exploratory analysis, I first visualized the distribution of key variables. Next, I generated maps via API key to display the spatial distribution of trees across the city, delineated by census-tract county lines of Philadelphia. I additionally created a map plotting trees, categorized into four groups based on their diameter: poles (0-9.9 inches), small (10-19.9 inches), medium (20-29.9 inches), and large to giant (30 inches and above); these are following the guidelines provided by the Forest Service at the U.S. Department of Agriculture (USDA). To analyze the statistical significance of my findings, I conducted an ANOVA and Pearson correlation tests.
+
+Below is the R code used to retrieve and clean the data, as well as perform the analysis:
+
+```{r Reading and Cleaning Data}
+setwd('/Users/noors/Desktop/UPENN/BiomedicalDataScience/Final/Noor_BMIN503_Final_Project')
+library(readr)
+library(magrittr)
+library(dplyr)
+library(ggplot2)
+library(car)
+library(tidyverse)
+library(sf)
+library(tigris)
+library(tidycensus)
+library(leaflet)
+library(RColorBrewer)
+library(ggmap)
+library(ggpubr)
+library(forcats)
+library(broom)
+options(tigris_use_cache = TRUE)
+options(progress_enabled = FALSE)
+
+ppr_tree_inventory_2023 <- read_csv("ppr_tree_inventory_2023.csv")
+#View(ppr_tree_inventory_2023)
+
+trees <- ppr_tree_inventory_2023 |>
+  filter(tree_name != "NA") |> #remove any trees that aren't named
+  filter(tree_name != "UNKNOWN UNKNOWN - UNKNOWN") |>#remove unknown names 
+  filter(tree_dbh != "NA") |> #remove any NA in breast diam
+  filter(tree_dbh != -3) |> #remove negative breast diam
+  filter(tree_dbh != 0) #remove NA breast diam
+
+names<-unique(ppr_tree_inventory_2023$tree_name) #showing list of type of trees 
+clean_names<-unique(trees$tree_name) #making sure NA is gone
+
+ggplot(trees, aes(x = tree_dbh)) + #checking distribution of data, we see that it is skewed right but not an issues since n>30
+  geom_density() +
+  theme_classic() +
+  xlim(0,75)+ #set x-axis interval
+  labs(x = "Tree Diameter at Breast Height (inches)", title = "Distribution of Tree Size", subtitle = "Philadelphia, PA 2023")
+```
+
+```{r Mean Diameter for Each Tree Type}
+tree_diameters <- trees %>% 
+  group_by(tree_name) %>%
+  summarize(avg_diameter = mean(tree_dbh, na.rm = TRUE)) #creating new tibble to find average dbh of each tree
+
+tree_freq <- trees %>%
+  group_by(tree_name) %>%
+  summarize(tree_freq = n()) #creating new tibble to count freq of tree in dataset
+
+
+#frequency of trees by name and that tree's average dbh, would help focus on planting these trees
+treename_and_freq <- left_join(tree_diameters, tree_freq, by = "tree_name") #joining tree count & diam
+hightreename_and_freq<- treename_and_freq %>%   arrange(desc(tree_freq), desc(avg_diameter))
+head(hightreename_and_freq)
+lowtreename_and_freq<- treename_and_freq 
+head(lowtreename_and_freq)
+```
+
+```{r Plotting Avg Diameters for Each Tree Type}
+ggplot(tree_diameters, aes(x = tree_name, y = avg_diameter)) +
+  geom_point(size=0.1) +
+  labs(title = "Average Diameter by Tree Name, 2023",
+       x = "Tree Name",
+       y = "Average Diameter") +
+  theme_classic()+
+  theme(axis.text.x = element_text(size = 3, angle = 150, vjust = 0.5, hjust=0.5)) #scatter plot to visualize theaverage diameter for each tree type, not helpful visual 
+
+ggplot(tree_diameters, aes(y = tree_name, x = avg_diameter, fill = tree_name)) +
+  geom_col() +  # Using geom_col() for bar plot
+  labs(title = "Average Diameter of Each Tree",
+       y = "Tree Name",
+       x = "Average Diameter (dbh)", 
+       subtitle = "Philadelphia, PA 2023") +
+  theme_classic() +
+  guides(fill = FALSE) +
+  theme(axis.text.y = element_text(size = 2, vjust = -0.5, hjust=0.5)) #bar plot of trees and their avg diam
+
+ggplot(tree_diameters, aes(y = fct_reorder(tree_name, avg_diameter), x = avg_diameter, fill = tree_name)) +
+  geom_col() +  # Using geom_col() for bar plot
+  labs(title = "Average Diameter of Each Tree",
+       y = "Tree Name",
+       x = "Average Diameter (dbh)", 
+       subtitle = "Philadelphia, PA 2023") +
+  theme_classic() +
+  guides(fill = FALSE) +
+  theme(axis.text.y = element_text(size = 2, vjust = -0.5, hjust = 0.5)) #trees in order of diam 
+
+ggplot(tree_diameters, aes(x = avg_diameter)) + 
+  geom_density() +
+  theme_classic()+
+  labs(x = "Mean Tree Diameter (BH)", y = "Density", title = "Density Plot of Average Tree Diameters", subtitle = "Philadelphia, PA 2023") #checking distribution of data
+```
+
+```{r ANOVA & Tukey - Comapring Diameters Across Trees}
+
+stats1 <- aov(tree_dbh ~ tree_name, data = trees) # Perform ANOVA testing sig of tree names and their diam
+summary(stats1) 
+
+
+tuk <- TukeyHSD(stats1) #Perform Tukey Test show differences between names
+tuk_output <- tidy(tuk) #make it tibble
+head(tuk_output)
+
+```
+
+```{r Maps}
+philly.tracts.2021 <- tracts("PA", "Philadelphia") #loads spatial data for Philadelphia as defined by census
+st_write(philly.tracts.2021, "philly_tracts_2020.shp", #write spatial data to a shapefile.
+         append = FALSE)
+
+phl.tri.sf <- st_as_sf(trees, coords = c("loc_x", "loc_y"), crs = 4326) #converts the data stored in trees to sf object 
+phl.tri.sf <- st_transform(phl.tri.sf, crs = st_crs(philly.tracts.2021)) #transforms the CRS of the phl.tri.sf to match the CRS of the philly.tracts.2020  
+
+joined_data <- st_join(phl.tri.sf, philly.tracts.2021, #spatial join between census info and trees info 
+                       join = st_intersects)
+
+ggplot() +  # map all trees in Philly
+
+  geom_sf(data = philly.tracts.2021) + #county outline
+  geom_sf(data = phl.tri.sf,color = "blue", alpha = 0.5,  size = 0.000001)+ #long and lat of trees
+  theme_classic() +
+  labs(title = "Trees Planted Throughout Philadelphia", subtitle = "Mapped by Census-Tract County")
+
+
+joined_data<- joined_data %>% #creating categories for diameters 
+  mutate(dbh_category = case_when(
+  tree_dbh <= 9.9 ~ "Poles - 0 to 9.9 in",             
+  tree_dbh <= 19.9 ~ "Small - 10 to 19.9 in",             
+  tree_dbh <= 29.9 ~ "Medium - 20 to 29.9 in",           
+  TRUE ~ "Large to Giant - 30+ in"               
+))
+
+ggplot() + #diameters map across Philly
+  geom_sf(data = philly.tracts.2021) + #county outline
+  geom_sf(data = joined_data, aes(color = dbh_category), size= 0.075) +
+  labs(title = "City of Philadelphia Trees by Diameter at Breast Height (DBH)", subtitle = "Mapped by Census-Tract County", color = "Diameter Category") +  # Change the legend title for color
+  theme_classic()
+```
+
+```{r Pearson Correlation Test Comparing Location (X and Y) and Tree Diameter / Frequency}
+
+#looking to see if theres a correlation between a tree's X and Y location w its given diameter at breast height
+long_test <- cor.test(joined_data$X, joined_data$tree_dbh, 
+                    method = "pearson")
+long_test
+lat_test <- cor.test(joined_data$Y, joined_data$tree_dbh, 
+                    method = "pearson")
+lat_test
+
+#looking to see if theres a correlation between a tree's freq/count and its X, Y location
+loc_and_freq <- left_join(joined_data, tree_freq, by = "tree_name")
+
+long_test1 <- cor.test(loc_and_freq$X, loc_and_freq$tree_freq, 
+                       method = "pearson")
+long_test1
+lat_test1 <- cor.test(loc_and_freq$Y, loc_and_freq$tree_freq, 
+                      method = "pearson")
+lat_test1
+```
 
 ## Results {#sec-results}
 
-Describe your results and include relevant tables, plots, and code/comments used to obtain them. You may refer to the @sec-methods as needed. End with a brief conclusion of your findings related to the question you set out to address. You can include references if you'd like, but this is not required.
+Again, the analysis process started by examining the distribution of the raw data, which showed a right-skewed trend. The dataset's size helped alleviate worries about skewedness impacting further analyses also being skewed. After the initial assessment, bar graphs were used to graphically display the recorded frequency of trees, ordered from largest to smallest mean diameter. The resulting right-skewed distribution of average diameters matched expectations based on trends of individual tree diameter values. After analyzing the ordered bar plot, the focus shifted to mapping the existing tree inventory in Philadelphia, revealing distinct clusters when looking both at tree locations and diameters. The spatial patterns highlighted the somewhat intricate nature of the urban tree canopy, suggesting various possible factors influencing tree dispersal, both in terms of count as well as size.
+
+After constructing the spatial context and visualizations, statistical investigations were conducted to further investigate the relevance of this relationship. An analysis of variance (ANOVA) was performed to see whether there is a significant correlation between the name (species) of a tree and its diameter at breast height (DBH). The summary output of the ANOVA analysis indicates a statistically significant impact of the predictor variable 'tree_name' on its diameter. The degrees of freedom indicate that there are 293 levels of the factor 'tree_name' being analyzed. The sum of squares suggests that this factor explains a significant amount of the observed variability in our analysis. The F-statistic of 340.3, along with the p-value of less than 0.05, provide compelling evidence to reject the null hypothesis that there are no differences across groups. In total, these findings are unsurprising as one would anticipate the presence of varying diameters across different tree species. However, they emphasize the importance of taking into account the type of tree planted and in what areas, as we know the protective effects on the environment and individual health increases with the size of a tree.
+
+To provide more specific information about the differences between groups, a Tukey HSD test was followed by the ANOVA. The dataset being considered is extensive, with about 300 unique trees and more than 500 potential comparisons. For simplicity, I present the outcomes derived from the initial entry in the output for this analysis. The presence of "ACER NEGUNDO - BOXELDER" is the first indication of a notable distinction when compared to the reference group, "ACER BUERGERANUM - TRIDENT MAPLE." The estimated effect indicates that the mean diameter of "ACER NEGUNDO - BOXELDER" is approximately 11.13 units greater than that of "ACER BUERGERANUM - TRIDENT MAPLE."
+
+Pearson correlation tests were subsequently employed to examine the associations between geographic coordinates (longitude and latitude) and tree attributes (diameter/frequency). The correlations highlighted statistical significance, varying from weak to moderate, still suggesting a link between the variables. Again, each Pearson correlation test evaluates the correlation between two variables and offers information on the intensity and direction of their relationship.
+
+1.  For the correlation between Longitude and Tree Diameter at BH:
+    -   The correlation coefficient is approximately 0.053, indicating a very weak positive correlation.
+    -   The 95% confidence interval for the correlation coefficient ranges from approximately 0.048 to 0.058.
+2.  For the correlation between Latitude and Tree Diameter at BH:
+    -   The correlation coefficient is approximately 0.207, indicating a moderate positive correlation.
+    -   The 95% confidence interval for the correlation coefficient ranges from approximately 0.202 to 0.212.
+3.  For the correlation between Longitude and Tree Frequency:
+    -   The correlation coefficient is approximately 0.056, indicating a very weak positive correlation.
+    -   The 95% confidence interval for the correlation coefficient ranges from approximately 0.051 to 0.061.
+4.  For the correlation between Latitude and Tree Frequency:
+    -   The correlation coefficient is approximately 0.060, indicating a very weak positive correlation.
+    -   The 95% confidence interval for the correlation coefficient ranges from approximately 0.055 to 0.065. In summary, all correlations are statistically significant, however, the strength of the correlations is generally very weak to moderate, as indicated by the correlation coefficients.
 
 ## Conclusion
 
-This the conclusion. The @sec-results can be invoked if you'd like.
+This study highlights the importance of conducting tree inventory studies in urban ecosystems and its effects on environmental sustainability and human well-being. Through the examination of patterns in the distribution of trees, the mix of species, and variations in tree diameter, these analyses provide important insights that are valuable for understanding the health and ability of urban areas to recover from challenges. For instance, our observation reveals that the West Philly area is predominantly characterized by the presence of very small trees that are grouped together.This information could be valuable in terms of direction for initiatives on tree planting locations and suitable species, as Philadelphia currently has a program for called Get a Street Tree. Pushed forth by the Parks and Recreation Department, this service is available for an individuals home, business, or other property.
+
+Furthermore, the identified connections between tree attributes and spatial arrangement offer useful insights for urban planners and policymakers that seek to improve green infrastructure and reduce environmental hazards. In addition to ecological factors, urban trees have a crucial impact on human well-being and overall quality of life by alleviating air and noise pollution, minimizing heat island effects, and offering recreational areas. Investing in thorough tree inventory projects is crucial for efficient urban management and for promoting healthier and more sustainable communities. These initiatives have benefits that extend to both the external and internal environment.
+
+Although the study provides vital insights into the correlations among different variables in the analysis of urban tree inventory, it is important to acknowledge the limitations. Firstly, the use of data just from Philadelphia may restrict the applicability of the results to other urban regions that have distinct environmental and demographic attributes. Moreover, the study's statistical correlations fails to consider possible confounding variables or biases that could impact the reported patterns. The relatively low to moderate level of correlation observed implies that there may be additional factors not considered in the analysis that could also influence the variation in tree features and spatial distribution. In addition, although the sample size is already great in number, increasing the sample size further could improve the variability of information represented as well as the reliability of the statistical findings. Although the study emphasizes the significance of tree inventory analysis in comprehending urban ecosystems and advocating for environmental sustainability and human health, these constraints underscore the necessity for additional research to validate and broaden findings in various urban settings.
+
+## References
+
+*Anova in r*. (n.d.). Stats and R., from https://statsandr.com/blog/anova-in-r/
+
+*Correlation test between two variables in r—Easy guides—Wiki—Sthda*. (n.d.)., from http://www.sthda.com/english/wiki/correlation-test-between-two-variables-in-r
+
+DeYoung, J. (2016). *3. 2 determining tree diameter*. https://openoregon.pressbooks.pub/forestmeasurements/chapter/3-2-determining-tree-diameter/
+
+Lay, C. R., Mills, D., Belova, A., Sarofim, M. C., Kinney, P. L., Vaidyanathan, A., Jones, R., Hall, R., & Saha, S. (2018). Emergency department visits and ambient temperature: Evaluating the connection and projecting future outcomes. *GeoHealth*, *2*(6), 182–194. https://doi.org/10.1002/2018GH000129
+
+*Mapping philadelphia’s urban forest \| office of open data and digital transformation \| posts*. (2016a, August 5). City of Philadelphia. https://www.phila.gov/posts/open-data-digital-transformation/2016-08-05-mapping-philadelphias-urban-forest/
+
+*Mapping philadelphia’s urban forest \| office of open data and digital transformation \| posts*. (2016b, August 5). City of Philadelphia. https://www.phila.gov/posts/open-data-digital-transformation/2016-08-05-mapping-philadelphias-urban-forest/
+
+*Metadata Catalog \| phila.gov*. (n.d.)., from https://metadata.phila.gov/#home/datasetdetails/57a0e1d5aa8882104134830e/representationdetails/653c0ec9e446dd00265a7e1a/?view_287_sort=field_188\|asc
+
+*One-way ANOVA - Violations to the assumptions of this test and how to report the results \| Laerd Statistics*. (n.d.)., from https://statistics.laerd.com/statistical-guides/one-way-anova-statistical-guide-3.php#:\~:text=There%20are%20two%20tests%20that,the%20Welch%20test%20is%20best.
+
+*Opendataphilly-jkan/\_datasets/philadelphia-tree-inventory. Md at main · opendataphilly/opendataphilly-jkan*. (n.d.). GitHub., from https://github.com/opendataphilly/opendataphilly-jkan/blob/main/\_datasets/philadelphia-tree-inventory.md
+
+*Philadelphia tree inventory*. (n.d.). OpenDataPhilly., from https://opendataphilly.org/datasets/philadelphia-tree-inventory/
+
+Philly mapped street trees for smarter maintenance. (n.d.). *WHYY*., from https://whyy.org/articles/philly-mapped-street-trees-for-smarter-maintenance/
