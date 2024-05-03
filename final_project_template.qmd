@@ -221,24 +221,26 @@ Although the study provides vital insights into the correlations among different
 
 ## References
 
-*Anova in r*. (n.d.). Stats and R., from https://statsandr.com/blog/anova-in-r/
+Anova in r. (n.d.). Stats and R., from https://statsandr.com/blog/anova-in-r/
 
-*Correlation test between two variables in r—Easy guides—Wiki—Sthda*. (n.d.)., from http://www.sthda.com/english/wiki/correlation-test-between-two-variables-in-r
+Correlation test between two variables in r—Easy guides—Wiki—Sthda. (n.d.)., from http://www.sthda.com/english/wiki/correlation-test-between-two-variables-in-r
 
-DeYoung, J. (2016). *3. 2 determining tree diameter*. https://openoregon.pressbooks.pub/forestmeasurements/chapter/3-2-determining-tree-diameter/
+DeYoung, J. (2016). 3. 2 determining tree diameter. https://openoregon.pressbooks.pub/forestmeasurements/chapter/3-2-determining-tree-diameter/
 
-Lay, C. R., Mills, D., Belova, A., Sarofim, M. C., Kinney, P. L., Vaidyanathan, A., Jones, R., Hall, R., & Saha, S. (2018). Emergency department visits and ambient temperature: Evaluating the connection and projecting future outcomes. *GeoHealth*, *2*(6), 182–194. https://doi.org/10.1002/2018GH000129
+Lay, C. R., Mills, D., Belova, A., Sarofim, M. C., Kinney, P. L., Vaidyanathan, A., Jones, R., Hall, R., & Saha, S. (2018). Emergency department visits and ambient temperature: Evaluating the connection and projecting future outcomes. GeoHealth, 2(6), 182–194. https://doi.org/10.1002/2018GH000129
 
-*Mapping philadelphia’s urban forest \| office of open data and digital transformation \| posts*. (2016a, August 5). City of Philadelphia. https://www.phila.gov/posts/open-data-digital-transformation/2016-08-05-mapping-philadelphias-urban-forest/
+Mapping philadelphia’s urban forest | office of open data and digital transformation | posts. (2016, August 5). City of Philadelphia. https://www.phila.gov/posts/open-data-digital-transformation/2016-08-05-mapping-philadelphias-urban-forest/
 
-*Mapping philadelphia’s urban forest \| office of open data and digital transformation \| posts*. (2016b, August 5). City of Philadelphia. https://www.phila.gov/posts/open-data-digital-transformation/2016-08-05-mapping-philadelphias-urban-forest/
+Mapping philadelphia’s urban forest | office of open data and digital transformation | posts. (2016, August 5). City of Philadelphia. https://www.phila.gov/posts/open-data-digital-transformation/2016-08-05-mapping-philadelphias-urban-forest/
 
-*Metadata Catalog \| phila.gov*. (n.d.)., from https://metadata.phila.gov/#home/datasetdetails/57a0e1d5aa8882104134830e/representationdetails/653c0ec9e446dd00265a7e1a/?view_287_sort=field_188\|asc
+Metadata Catalog | phila.gov. (n.d.)., from https://metadata.phila.gov/#home/datasetdetails/57a0e1d5aa8882104134830e/representationdetails/653c0ec9e446dd00265a7e1a/?view_287_sort=field_188|asc
 
-*One-way ANOVA - Violations to the assumptions of this test and how to report the results \| Laerd Statistics*. (n.d.)., from https://statistics.laerd.com/statistical-guides/one-way-anova-statistical-guide-3.php#:\~:text=There%20are%20two%20tests%20that,the%20Welch%20test%20is%20best.
+One-way ANOVA - Violations to the assumptions of this test and how to report the results | Laerd Statistics. (n.d.)., from https://statistics.laerd.com/statistical-guides/one-way-anova-statistical-guide-3.php#:~:text=There%20are%20two%20tests%20that,the%20Welch%20test%20is%20best.
 
-*Opendataphilly-jkan/\_datasets/philadelphia-tree-inventory. Md at main · opendataphilly/opendataphilly-jkan*. (n.d.). GitHub., from https://github.com/opendataphilly/opendataphilly-jkan/blob/main/\_datasets/philadelphia-tree-inventory.md
+Opendataphilly-jkan/_datasets/philadelphia-tree-inventory. Md at main · opendataphilly/opendataphilly-jkan. (n.d.). 
 
-*Philadelphia tree inventory*. (n.d.). OpenDataPhilly., from https://opendataphilly.org/datasets/philadelphia-tree-inventory/
+GitHub., from https://github.com/opendataphilly/opendataphilly-jkan/blob/main/_datasets/philadelphia-tree-inventory.md
 
-Philly mapped street trees for smarter maintenance. (n.d.). *WHYY*., from https://whyy.org/articles/philly-mapped-street-trees-for-smarter-maintenance/
+Philadelphia tree inventory. (n.d.). OpenDataPhilly., from https://opendataphilly.org/datasets/philadelphia-tree-inventory/
+
+Philly mapped street trees for smarter maintenance. (n.d.). WHYY., from https://whyy.org/articles/philly-mapped-street-trees-for-smarter-maintenance/
