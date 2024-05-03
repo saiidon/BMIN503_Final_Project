@@ -1,19 +1,13 @@
-# BMIN503/EPID600 Final Project
+## ReadME - BMIN 503 Final Project
 
-This repository contains templates for your final written report and GitHub repository. Follow the instructions below to clone this repository, and then turn in your final project's code via a pull request to this repository.
+What the project does?
 
-1. To start, **fork** this BMIN503_Final_Project repository.
-1. **Clone** the forked repository to your computer.
-1. Modify the files provided, add your own, and **commit** changes to complete your final project.
-1. **Push**/sync the changes up to your GitHub account.
-1. Create a **pull request** on this, the original BMIN503_Final_Project, repository to turn in your final project.
+The research looks into Philadelphia, Pennsylvania's urban tree inventory with the goal of learning more about the many advantages trees offer in metropolitan areas. It looks at the ways that trees control temperatures, increase public health, act as carbon sinks, and support mental health.
 
+Why the project is useful?
 
-Follow the instructions [here][forking] if you are unsure what the above steps mean.
+The public health and environmental sustainability intrinscially affected by this endeavor.By filtering air pollutants, which are identified as a major contributor to a number of environmental issues, trees not only reduce greenhouse gas emissions but also improve lung health. Moreover, research suggests that urban greenery, including trees, positively influences mental well-being by reducing stress levels. With the escalating challenges of climate change and the increasing frequency of extreme weather events, understanding urban tree inventories becomes crucial. Through thorough tree cover analysis, the research provides information about the long-term viability of urban settings and the welfare of city people.
 
-DUE DATE FOR FINAL VERSION: 12/13/23 11:59PM. This is a hard deadline. Turn in whatever you have by this date.
+How users can get started with the project?
 
-
-<!-- Links -->
-[forking]: https://guides.github.com/activities/forking/
-
+Those who are interested in participating with this initiative can start by going to Open Data Philly and downloading the dataset for free. The collection includes details on Philadelphia's current tree inventory, which is updated annually. Further reseearch in this area can advance knowledge about urban tree cover and its ripple effect . Researchers can also work along with experts from other fields, such urban planners, to obtain a a greater awareness of the future distribution, health, and effects of urban trees.
